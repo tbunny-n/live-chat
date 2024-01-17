@@ -11,21 +11,11 @@
     <link rel="stylesheet" href="src/style.css" />
     <title>MichaelChat</title>
 
-    <script>
-        // Wait for the page to load
-        document.addEventListener("DOMContentLoaded", function () {
-            const sendButton = document.querySelector("#send-message-button");
-
-            sendButton.addEventListener("click", (e) => {
-                e.preventDefault();
-                chatbox.value = "";
-            });
-        });
-    </script>
+    <script lang="ts" type="module" src="src/main.ts" defer></script>
 </head>
 
 <body>
-    <div hx-ext="ws" ws-connect="/ws" id="app">
+    <div hx-ext="ws" ws-connect="ws://localhost:8080" id="app">
         <div id="chat-messages">
             <!-- Chat messages go in here -->
             <p>
