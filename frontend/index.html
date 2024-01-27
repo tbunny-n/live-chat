@@ -1,7 +1,6 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- HTMX -->
@@ -12,51 +11,50 @@
     <title>MichaelChat</title>
 
     <script lang="ts" type="module" src="src/main.ts" defer></script>
-</head>
+  </head>
 
-<body>
-    <div hx-ext="ws" ws-connect="ws://localhost:8080" id="app">
-        <div id="chat-messages">
-            <!-- Chat messages go in here -->
-            <p>
-                Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint
-                cillum sint consectetur cupidatat.
-            </p>
-            <p>
-                Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint
-                cillum.
-            </p>
-            <p>
-                Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint
-                cillum sint consectetur cupidatat.
-            </p>
-            <p>
-                Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint
-                cillum.
-            </p>
-            <p>
-                Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint
-                cillum sint consectetur cupidatat.
-            </p>
-            <p>
-                Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit
-                enim labore culpa sint ad nisi Lorem pariatur mollit ex esse
-                exercitation amet. Nisi anim cupidatat excepteur officia.
-                Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate
-                voluptate dolor minim nulla est proident. Nostrud officia pariatur ut
-                officia. Sit irure elit esse ea nulla sunt ex occaecat reprehenderit
-                commodo officia dolor Lorem duis laboris cupidatat officia voluptate.
-                Culpa proident adipisicing id nulla nisi laboris ex in Lorem sunt duis
-                officia eiusmod. Aliqua reprehenderit commodo ex non excepteur duis
-                sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
-                consectetur et est culpa et culpa duis.
-            </p>
-        </div>
-        <form ws-send id="chat-form">
-            <input type="text" name="chatbox" id="chatbox" />
-            <button id="send-message-button">Send</button>
-        </form>
+  <body hx-ext="ws" ws-connect="ws://localhost:8080/ws">
+    <div id="app">
+      <div id="chat-messages">
+        <!-- Chat messages go in here -->
+        <p>
+          Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint
+          cillum sint consectetur cupidatat.
+        </p>
+        <p>
+          Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint
+          cillum.
+        </p>
+        <p>
+          Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint
+          cillum sint consectetur cupidatat.
+        </p>
+        <p>
+          Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint
+          cillum.
+        </p>
+        <p>
+          Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint
+          cillum sint consectetur cupidatat.
+        </p>
+        <p>
+          Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit
+          enim labore culpa sint ad nisi Lorem pariatur mollit ex esse
+          exercitation amet. Nisi anim cupidatat excepteur officia.
+          Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate
+          voluptate dolor minim nulla est proident. Nostrud officia pariatur ut
+          officia. Sit irure elit esse ea nulla sunt ex occaecat reprehenderit
+          commodo officia dolor Lorem duis laboris cupidatat officia voluptate.
+          Culpa proident adipisicing id nulla nisi laboris ex in Lorem sunt duis
+          officia eiusmod. Aliqua reprehenderit commodo ex non excepteur duis
+          sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea
+          consectetur et est culpa et culpa duis.
+        </p>
+      </div>
+      <form id="chat-form" ws-send="true">
+        <input type="text" name="chatbox" id="chatbox" />
+        <button type="submit" id="send-message-button">Send</button>
+      </form>
     </div>
-</body>
-
+  </body>
 </html>
