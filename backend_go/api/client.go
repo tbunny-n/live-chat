@@ -1,10 +1,10 @@
-package main
+package api
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
+	"github.com/charmbracelet/log"
 	"net/http"
 	"time"
 
@@ -67,7 +67,7 @@ func (c *Client) readPump() {
 		_, message, err := c.conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Printf("error: %v", err)
+				log.Errorf("UnexpectedCloseError: %v\n", err)
 			}
 			break
 		}
@@ -134,10 +134,10 @@ func (c *Client) writePump() {
 }
 
 // ServeWs handles websocket requests from the peer.
-func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
+func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return
 	}
 	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256)}

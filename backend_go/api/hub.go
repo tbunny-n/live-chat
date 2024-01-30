@@ -1,6 +1,6 @@
-package main
+package api
 
-import "log"
+import "github.com/charmbracelet/log"
 
 // Hub maintains the set of active clients
 // and broadcasts messages to them.
@@ -18,7 +18,7 @@ type Hub struct {
 	unregister chan *Client
 }
 
-func newHub() *Hub {
+func NewHub() *Hub {
 	return &Hub{
 		broadcast:  make(chan []byte),
 		register:   make(chan *Client),
@@ -27,24 +27,24 @@ func newHub() *Hub {
 	}
 }
 
-func (h *Hub) run() {
+func (h *Hub) Run() {
 	for {
 		select {
 		// Handle registering and unregistering clients.
 		case client := <-h.register:
-			log.Println("Registering client!")
+			log.Debug("Registering client!")
 			h.clients[client] = true
 		case client := <-h.unregister:
-			log.Println("Unregistering client!")
+			log.Debug("Unregistering client!")
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)
 				close(client.send)
-				log.Println("Unregistered client!")
+				log.Debug("Unregistered client!")
 			}
 
 		// Handle broadcasting messages to clients.
 		case message := <-h.broadcast:
-			log.Printf("Recieved message: %v\n", string(message))
+			log.Debugf("Recieved message: %v\n", string(message))
 			for client := range h.clients {
 				select {
 				case client.send <- message:
