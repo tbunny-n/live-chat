@@ -16,11 +16,18 @@ import (
 /* This is the frontend for the chat websocket
 It's a TUI, an alternative to the web frontend */
 
-func StartChatroomInterface() {
+func StartChatroomInterface(wsUrl string) {
 	log.Debug("Starting chatroom interface")
 
-	p := tea.NewProgram(initialModel())
+	// Connect to the websocket
+	err := connectToWebsocket(wsUrl)
+	if err != nil {
+		log.Error("Failed to connect to websocket", "err", err)
+	}
 
+	// Create the TUI
+	p := tea.NewProgram(initialModel())
+	// Run the TUI
 	if _, err := p.Run(); err != nil {
 		log.Fatal(err)
 	}
