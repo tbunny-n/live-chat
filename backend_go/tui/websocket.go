@@ -26,7 +26,7 @@ func connectToWebsocket(url string) error {
 
 // `connectToWebsocket` needs to be called before this function
 // to initialize `wsConn` and `wsUrl`
-func sendMessage(msg string) error {
+func sendMessage(username string, msg string) error {
 	// Check that the URL has been set
 	if wsUrl == "" {
 		log.Fatal("No websocket URL set!")
@@ -43,9 +43,11 @@ func sendMessage(msg string) error {
 
 	// Format message
 	var data struct {
-		Chatbox string `json:"chatbox"`
+		Chatbox  string `json:"chatbox"`
+		Username string `json:"username"`
 	}
 	data.Chatbox = msg
+	data.Username = username
 	// Convert to JSON
 	jsonData, err := json.Marshal(data)
 	if err != nil {

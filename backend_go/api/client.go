@@ -2,7 +2,6 @@ package api
 
 import (
 	"bytes"
-	"encoding/json"
 	"net/http"
 	"time"
 
@@ -102,13 +101,6 @@ func (c *Client) writePump() {
 				return
 			}
 
-			// Parse the JSON message to get the chatbox value.
-			var data struct {
-				Chatbox string `json:"chatbox"`
-			}
-			json.Unmarshal(message, &data)
-			chatboxValue := data.Chatbox
-
 			// // Format message as HTML.
 			// // TODO: Sanitize the HTML message.
 			// htmlMessage := fmt.Sprintf(`<div hx-swap-oob="beforeend:#chat-messages" class="chat-message"><p>%s</p></div>`, chatboxValue)
@@ -116,7 +108,7 @@ func (c *Client) writePump() {
 			// // Write the message.
 			// w.Write([]byte(htmlMessage))
 
-			w.Write([]byte(chatboxValue))
+			w.Write(message)
 
 			// Add queued chat messages to the current websocket message.
 			n := len(c.send)

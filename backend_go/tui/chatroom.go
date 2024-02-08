@@ -1,8 +1,11 @@
 package tui
 
 import (
+	"encoding/json"
 	"fmt"
+
 	"github.com/charmbracelet/log"
+
 	// "net/http"
 	"strings"
 	// "time"
@@ -16,10 +19,16 @@ import (
 /* This is the frontend for the chat websocket
 It's a TUI, an alternative to the web frontend */
 
-var messages []string
+var (
+	messages []string
+	username string
+)
 
 func StartChatroomInterface(wsUrl string) {
 	log.Debug("Starting chatroom interface")
+
+	// Generate username for client
+	username = generateUsername()
 
 	// Connect to the websocket
 	err := connectToWebsocket(wsUrl)
@@ -35,8 +44,18 @@ func StartChatroomInterface(wsUrl string) {
 				log.Error("Failed to read message from websocket", "err", err)
 				return
 			}
+			var jsonMsg struct {
+				Chatbox  string `json:"chatbox"`
+				Username string `json:"username"`
+			}
+			err = json.Unmarshal(msg, &jsonMsg)
+			if err != nil {
+				log.Error("Failed to unmarshal JSON", "err", err)
+				return
+			}
+
 			log.Debug("Received message", "msg", string(msg))
-			messages = append(messages, string(msg))
+			messages = append(messages, string(jsonMsg.Username)+": "+string(jsonMsg.Chatbox))
 		}
 	}()
 
@@ -109,9 +128,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			fmt.Println(m.textarea.Value())
 			return m, tea.Quit
 		case tea.KeyEnter:
+			sendMessage(username, m.textarea.Value())
 			m.viewport.SetContent(strings.Join(messages, "\n"))
 			m.viewport.GotoBottom()
-			sendMessage(m.textarea.Value())
 			m.textarea.Reset()
 		}
 
