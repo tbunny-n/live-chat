@@ -16,6 +16,8 @@ import (
 /* This is the frontend for the chat websocket
 It's a TUI, an alternative to the web frontend */
 
+var messages []string
+
 func StartChatroomInterface(wsUrl string) {
 	log.Debug("Starting chatroom interface")
 
@@ -24,6 +26,19 @@ func StartChatroomInterface(wsUrl string) {
 	if err != nil {
 		log.Error("Failed to connect to websocket", "err", err)
 	}
+
+	// Listen for websocket messages
+	go func() {
+		for {
+			_, msg, err := wsConn.ReadMessage()
+			if err != nil {
+				log.Error("Failed to read message from websocket", "err", err)
+				return
+			}
+			log.Debug("Received message", "msg", string(msg))
+			messages = append(messages, string(msg))
+		}
+	}()
 
 	// Create the TUI
 	p := tea.NewProgram(initialModel())
@@ -35,7 +50,6 @@ func StartChatroomInterface(wsUrl string) {
 
 type model struct {
 	viewport    viewport.Model
-	messages    []string
 	textarea    textarea.Model
 	senderStyle lipgloss.Style
 	err         error
@@ -67,7 +81,6 @@ Type a message and press Enter to send.`)
 
 	return model{
 		textarea:    ta,
-		messages:    []string{},
 		viewport:    vp,
 		senderStyle: lipgloss.NewStyle().Foreground(lipgloss.Color("5")),
 		err:         nil,
@@ -84,6 +97,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		vpCmd tea.Cmd
 	)
 
+	m.viewport.SetContent(strings.Join(messages, "\n"))
+
 	m.textarea, tiCmd = m.textarea.Update(msg)
 	m.viewport, vpCmd = m.viewport.Update(msg)
 
@@ -94,10 +109,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			fmt.Println(m.textarea.Value())
 			return m, tea.Quit
 		case tea.KeyEnter:
-			m.messages = append(m.messages, m.senderStyle.Render("You: ")+m.textarea.Value())
-			m.viewport.SetContent(strings.Join(m.messages, "\n"))
-			m.textarea.Reset()
+			m.viewport.SetContent(strings.Join(messages, "\n"))
 			m.viewport.GotoBottom()
+			sendMessage(m.textarea.Value())
+			m.textarea.Reset()
 		}
 
 	// We handle errors just like any other message

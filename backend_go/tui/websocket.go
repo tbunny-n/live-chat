@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"encoding/json"
 	"github.com/charmbracelet/log"
 	"github.com/gorilla/websocket"
 )
@@ -40,9 +41,21 @@ func sendMessage(msg string) error {
 		}
 	}
 
+	// Format message
+	var data struct {
+		Chatbox string `json:"chatbox"`
+	}
+	data.Chatbox = msg
+	// Convert to JSON
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		log.Error("Failed to marshal JSON", "err", err)
+		return err
+	}
+
 	// Write message to WebSocket
 	log.Debug("Sending message", "msg", msg)
-	err := wsConn.WriteMessage(websocket.TextMessage, []byte(msg))
+	err = wsConn.WriteMessage(websocket.TextMessage, []byte(jsonData))
 	if err != nil {
 		return err
 	}

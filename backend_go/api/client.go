@@ -3,10 +3,10 @@ package api
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
-	"github.com/charmbracelet/log"
 	"net/http"
 	"time"
+
+	"github.com/charmbracelet/log"
 
 	"github.com/gorilla/websocket"
 )
@@ -103,16 +103,20 @@ func (c *Client) writePump() {
 			}
 
 			// Parse the JSON message to get the chatbox value.
-			var data map[string]interface{}
+			var data struct {
+				Chatbox string `json:"chatbox"`
+			}
 			json.Unmarshal(message, &data)
-			chatboxValue := data["chatbox"]
+			chatboxValue := data.Chatbox
 
-			// Format message as HTML.
-			// TODO: Sanitize the HTML message.
-			htmlMessage := fmt.Sprintf(`<div hx-swap-oob="beforeend:#chat-messages" class="chat-message"><p>%s</p></div>`, chatboxValue)
+			// // Format message as HTML.
+			// // TODO: Sanitize the HTML message.
+			// htmlMessage := fmt.Sprintf(`<div hx-swap-oob="beforeend:#chat-messages" class="chat-message"><p>%s</p></div>`, chatboxValue)
+			//
+			// // Write the message.
+			// w.Write([]byte(htmlMessage))
 
-			// Write the message.
-			w.Write([]byte(htmlMessage))
+			w.Write([]byte(chatboxValue))
 
 			// Add queued chat messages to the current websocket message.
 			n := len(c.send)
