@@ -1,7 +1,7 @@
 export default {
   server: {
     proxy: {
-      "/ws": {
+      "/chatroom": {
         target: "ws://localhost:8080/ws",
         ws: true,
       },
