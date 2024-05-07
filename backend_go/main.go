@@ -15,24 +15,24 @@ import (
 var addr = flag.String("addr", ":8080", "http service address")
 
 // TODO: Default these to false
-var fullstack = flag.Bool("fullstack", true, "serve fullstack app in terminal only (default: false)")
-var debug = flag.Bool("debug", false, "enable debug logging (default: false)")
+var Fullstack = flag.Bool("fullstack", true, "serve fullstack app in terminal only (default: false)")
+var Debug = flag.Bool("debug", false, "enable debug logging (default: false)")
 
 func main() {
 	flag.Parse()
 	wsUrl := fmt.Sprintf("ws://localhost%s/ws", *addr) // WebSocket URL
 
 	// ! Set up logging
-	if *debug {
+	if *Debug {
 		log.SetLevel(log.DebugLevel)
 		log.Debug("Debug logging enabled")
 	}
 
 	// ! Serve fullstack app in terminal if flag is set
-	if *fullstack {
+	if *Fullstack {
 		go tui.StartChatroomInterface(wsUrl)
 
-		if !*debug {
+		if !*Debug {
 			log.SetLevel(log.ErrorLevel)
 		}
 	}

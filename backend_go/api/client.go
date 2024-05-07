@@ -2,10 +2,13 @@ package api
 
 import (
 	"bytes"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/charmbracelet/log"
+	"github.com/microcosm-cc/bluemonday"
 
 	"github.com/gorilla/websocket"
 )
@@ -101,14 +104,26 @@ func (c *Client) writePump() {
 				return
 			}
 
-			// // Format message as HTML.
-			// // TODO: Sanitize the HTML message.
-			// htmlMessage := fmt.Sprintf(`<div hx-swap-oob="beforeend:#chat-messages" class="chat-message"><p>%s</p></div>`, chatboxValue)
-			//
-			// // Write the message.
-			// w.Write([]byte(htmlMessage))
+			// TODO: Get the username
+			// (need to implement auth first lol)
 
-			w.Write(message)
+			// Get chatbox message
+			var chatInput struct {
+				Chatbox string `json:"chatbox"`
+			}
+			err = json.Unmarshal(message, &chatInput)
+			if err != nil {
+				log.Warn("Error unmarshaling JSON: %v", err)
+				return
+			}
+
+			// Format message as HTML.
+			p := bluemonday.UGCPolicy()
+			sanitizedMessage := p.Sanitize(chatInput.Chatbox)
+			htmlMessage := fmt.Sprintf(`<div hx-swap-oob="beforeend:#chat-messages" class="chat-message"><p>%s</p></div>`, sanitizedMessage)
+
+			// Write the message.
+			w.Write([]byte(htmlMessage))
 
 			// Add queued chat messages to the current websocket message.
 			n := len(c.send)
@@ -136,7 +151,7 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		log.Error(err)
 		return
 	}
-  log.Info("Upgraded connection successfully")
+	log.Info("Upgraded connection successfully")
 	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256)}
 	client.hub.register <- client
 
